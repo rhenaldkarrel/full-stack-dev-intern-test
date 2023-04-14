@@ -51,7 +51,7 @@ I created the search functionality everytime the users typing. But, I optimized 
 
 `client/utils/debounce.ts`
 
-```vue
+```ts
 export function debounce(func: Function, delay: number) {
     let timerId: NodeJS.Timeout;
     return function (this: any, ...args: any[]) {
