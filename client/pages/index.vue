@@ -2,7 +2,7 @@
     <div
         class="max-w-7xl mx-auto border min-h-[calc(100vh_-_68px)] p-8 space-y-4"
     >
-        <CommentSearchForm />
+        <CommentSearchForm @handle-search="handleSearch" />
         <div class="flex flex-col space-y-4">
             <ClientOnly fallback="Loading comments...">
                 <CommentItem
@@ -11,13 +11,15 @@
                     :username="comment.username"
                     :comment="comment.comment"
                 />
+                <p v-if="comments.length === 0">No data found.</p>
+                <button
+                    class="bg-[#00DB81] w-max mx-auto p-2 rounded-lg text-white hover:opacity-80 transition"
+                    @click="handleLoadMoreComments"
+                    v-if="comments.length > 0 && nextPageUrl !== null"
+                >
+                    Load More
+                </button>
             </ClientOnly>
-            <button
-                class="bg-[#00DB81] w-max mx-auto p-2 rounded-lg text-white hover:opacity-80 transition"
-                @click="handleLoadMoreComments"
-            >
-                Load More
-            </button>
         </div>
     </div>
 </template>
@@ -46,5 +48,16 @@ async function handleLoadMoreComments() {
     } catch (err) {
         console.log(err);
     }
+}
+
+async function handleSearch(query) {
+    const response = await fetch(
+        `http://localhost:8000/api/comments?query=${query}`
+    );
+    const data = await response.json();
+
+    nextPageUrl.value = data.next_page_url;
+
+    comments.value = [...data.data];
 }
 </script>

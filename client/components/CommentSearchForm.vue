@@ -1,5 +1,5 @@
 <template>
-    <form>
+    <form @submit="handleSubmit">
         <div class="relative">
             <span class="absolute inset-y-0 left-0 flex items-center pl-2">
                 <button
@@ -27,7 +27,22 @@
                 class="py-2 text-sm border rounded-full pl-10 pr-2 focus:outline-none w-full max-w-[512px]"
                 placeholder="Search..."
                 autocomplete="off"
+                v-model="state.query"
             />
         </div>
     </form>
 </template>
+
+<script setup lang="ts">
+const state = reactive({
+    query: "",
+});
+
+const emits = defineEmits(["handleSearch"]);
+
+function handleSubmit(e: Event) {
+    e.preventDefault();
+
+    emits("handleSearch", state.query);
+}
+</script>
