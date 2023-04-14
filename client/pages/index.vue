@@ -28,9 +28,12 @@
 import CommentSearchForm from "~/components/CommentSearchForm.vue";
 import CommentItem from "~/components/CommentItem.vue";
 
+const config = useRuntimeConfig();
+const API_URL = config.public.API_URL;
+
 const comments = ref([]);
 const nextPageUrl = ref("");
-const { data } = useFetch(`http://localhost:8000/api/comments`);
+const { data } = useFetch(`${API_URL}/api/comments`);
 
 if (data.value) {
     comments.value = data.value.data;
@@ -46,18 +49,20 @@ async function handleLoadMoreComments() {
 
         comments.value = [...comments.value, ...newComments.data];
     } catch (err) {
-        console.log(err);
+        console.error(err);
     }
 }
 
 async function handleSearch(query) {
-    const response = await fetch(
-        `http://localhost:8000/api/comments?query=${query}`
-    );
-    const data = await response.json();
+    try {
+        const response = await fetch(`${API_URL}/api/comments?query=${query}`);
+        const data = await response.json();
 
-    nextPageUrl.value = data.next_page_url;
+        nextPageUrl.value = data.next_page_url;
 
-    comments.value = [...data.data];
+        comments.value = [...data.data];
+    } catch (err) {
+        console.error(err);
+    }
 }
 </script>
