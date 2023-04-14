@@ -2,7 +2,7 @@
     <div
         class="max-w-7xl mx-auto border min-h-[calc(100vh_-_68px)] p-8 space-y-4"
     >
-        <CommentSearchForm @handle-search="handleSearch" />
+        <CommentSearchForm @handle-search="debouncedHandleSearch" />
         <div class="flex flex-col space-y-4">
             <ClientOnly fallback="Loading comments...">
                 <CommentItem
@@ -27,6 +27,8 @@
 <script setup>
 import CommentSearchForm from "~/components/CommentSearchForm.vue";
 import CommentItem from "~/components/CommentItem.vue";
+
+import { debounce } from "~/utils/debounce";
 
 const config = useRuntimeConfig();
 const API_URL = config.public.API_URL;
@@ -65,4 +67,6 @@ async function handleSearch(query) {
         console.error(err);
     }
 }
+
+const debouncedHandleSearch = debounce(handleSearch, 500);
 </script>
