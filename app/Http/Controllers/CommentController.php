@@ -21,8 +21,6 @@ class CommentController extends Controller
 
         $comments = $query->latest()->paginate(10);
 
-        return response()->json([
-            'data' => $comments
-        ], 200);
+        return response()->json($comments, 200);
     }
 }
