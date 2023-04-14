@@ -9,10 +9,12 @@ First, setup the .env file, then run this command:
 Run the Laravel backend server.
 
 ```bash
-    php artisan serve
+    composer install && php artisan serve
 ```
 
-Go to the Nuxt client app.
+Run the database.
+
+Open new terminal and go to the Nuxt client app.
 
 ```bash
     cd client
