@@ -1,19 +1,23 @@
 <template>
-    <div class="max-w-7xl mx-auto border min-h-[calc(100vh_-_68px)] p-8 space-y-4">
+    <div
+        class="max-w-7xl mx-auto border min-h-[calc(100vh_-_68px)] p-8 space-y-4"
+    >
         <CommentSearchForm />
         <div class="flex flex-col space-y-4">
-            <CommentItem
-                :username="'John Doe'"
-                :comment="'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil consectetur, ex maxime quo accusamus soluta quasi. Quos blanditiis, ab aspernatur ea temporibus sapiente illo! Adipisci impedit dolorum, explicabo nesciunt, quos ullam quasi maxime natus, alias eius aspernatur consequuntur perferendis magnam!'"
-            />
-            <CommentItem
-                :username="'John Doe'"
-                :comment="'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil consectetur, ex maxime quo accusamus soluta quasi. Quos blanditiis, ab aspernatur ea temporibus sapiente illo! Adipisci impedit dolorum, explicabo nesciunt, quos ullam quasi maxime natus, alias eius aspernatur consequuntur perferendis magnam!'"
-            />
-            <CommentItem
-                :username="'John Doe'"
-                :comment="'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil consectetur, ex maxime quo accusamus soluta quasi. Quos blanditiis, ab aspernatur ea temporibus sapiente illo! Adipisci impedit dolorum, explicabo nesciunt, quos ullam quasi maxime natus, alias eius aspernatur consequuntur perferendis magnam!'"
-            />
+            <ClientOnly fallback="Loading comments...">
+                <CommentItem
+                    v-for="comment in comments"
+                    :key="comment.username"
+                    :username="comment.username"
+                    :comment="comment.comment"
+                />
+            </ClientOnly>
+            <button
+                class="bg-[#00DB81] w-max mx-auto p-2 rounded-lg text-white hover:opacity-80 transition"
+                @click="handleLoadMoreComments"
+            >
+                Load More
+            </button>
         </div>
     </div>
 </template>
@@ -21,4 +25,26 @@
 <script setup>
 import CommentSearchForm from "~/components/CommentSearchForm.vue";
 import CommentItem from "~/components/CommentItem.vue";
+
+const comments = ref([]);
+const nextPageUrl = ref("");
+const { data } = useFetch(`http://localhost:8000/api/comments`);
+
+if (data.value) {
+    comments.value = data.value.data;
+    nextPageUrl.value = data.value.next_page_url;
+}
+
+async function handleLoadMoreComments() {
+    try {
+        const response = await fetch(nextPageUrl.value);
+        const newComments = await response.json();
+
+        nextPageUrl.value = newComments.next_page_url;
+
+        comments.value = [...comments.value, ...newComments.data];
+    } catch (err) {
+        console.log(err);
+    }
+}
 </script>
