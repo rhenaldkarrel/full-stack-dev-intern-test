@@ -16,7 +16,7 @@ class CommentController extends Controller
                 ->orWhere('comment', 'like', '%' . $request->input('query') . '%');
         }
 
-        $comments = $query->latest()->paginate(10);
+        $comments = $query->latest()->paginate(10)->appends($request->all());
 
         return response()->json($comments, 200);
     }
