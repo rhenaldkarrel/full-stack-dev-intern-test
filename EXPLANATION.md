@@ -23,7 +23,8 @@ Here I render the `Comments` on the client-side. This is because I stored the da
     :username="comment.username"
     :comment="comment.comment"
 />
-<p v-if="comments.length === 0">No data found.</p> // fallback if data is empty
+<!-- fallback if data is empty -->
+<p v-if="comments.length === 0">No data found.</p>
 ```
 
 ## Conditionally render Load More button
@@ -39,7 +40,8 @@ Here I render the `Load More` button in two conditions:
 <button
     class="bg-[#00DB81] w-max mx-auto p-2 rounded-lg text-white hover:opacity-80 transition"
     @click="handleLoadMoreComments"
-    v-if="comments.length > 0 && nextPageUrl !== null" // here
+    <!-- here -->
+    v-if="comments.length > 0 && nextPageUrl !== null"
 >
     Load More
 </button>
@@ -77,10 +79,12 @@ I also gave a feedback about the words searched in the UI.
         placeholder="Search..."
         autocomplete="off"
         v-model="state.query"
-        @input="handleSearch" // event
+        <!-- event -->
+        @input="handleSearch"
     />
     ...
-    <p v-if="state.query" class="text-gray-500">Searching: {{ state.query }}</p> // feedback
+    <!-- feedback -->
+    <p v-if="state.query" class="text-gray-500">Searching: {{ state.query }}</p>
     ...
 </template>
 
@@ -104,7 +108,8 @@ function handleSearch(e: Event) {
 ```vue
 <template>
     ...
-    <CommentSearchForm @handle-search="debouncedHandleSearch" /> // pass the search function
+    <!-- pass the search function -->
+    <CommentSearchForm @handle-search="debouncedHandleSearch" />
     ...
 </template>
 
@@ -152,7 +157,8 @@ The assigned state will be passed to the `CommentItem` component. Here I render 
     :key="comment.username"
     :username="comment.username"
     :comment="comment.comment"
-    :words="state.words" // pass the words (the query)
+    <!-- pass the words (the query) -->
+    :words="state.words"
 />
 ```
 
@@ -162,12 +168,14 @@ The assigned state will be passed to the `CommentItem` component. Here I render 
 <template>
     <div class="border rounded-lg p-4">
         <h1 class="text-xl font-semibold">
-            <WordHighlighter :query="props.words" :splitBySpace="true"> // highlighter
+            <!-- highlighter -->
+            <WordHighlighter :query="props.words" :splitBySpace="true">
                 {{ props.username }}
             </WordHighlighter>
         </h1>
         <p>
-            <WordHighlighter :query="props.words" :splitBySpace="true"> // highlighter
+            <!-- highlighter -->
+            <WordHighlighter :query="props.words" :splitBySpace="true">
                 {{ props.comment }}
             </WordHighlighter>
         </p>
