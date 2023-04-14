@@ -6,8 +6,8 @@
 </template>
 
 <script setup lang="ts">
-    const props = defineProps({
-        username: String,
-        comment: String,
-    })
+const props = defineProps({
+    username: String,
+    comment: String,
+});
 </script>
