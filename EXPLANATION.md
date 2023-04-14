@@ -4,6 +4,8 @@
 
 Here I render the `Comments` on the client-side. This is because I stored the data inside `ref` so that I can integrate the pagination as well.
 
+`client/pages/index.vue`
+
 ```vue
 <ClientOnly fallback="Loading comments...">
     ...
@@ -11,6 +13,8 @@ Here I render the `Comments` on the client-side. This is because I stored the da
 ```
 
 ## Fallback empty data
+
+`client/pages/index.vue`
 
 ```vue
 <CommentItem
@@ -29,11 +33,13 @@ Here I render the `Load More` button in two conditions:
 - `Comments` data is not empty
 - `nextPageUrl` property from Laravel is not null.
 
+`client/pages/index.vue`
+
 ```vue
 <button
     class="bg-[#00DB81] w-max mx-auto p-2 rounded-lg text-white hover:opacity-80 transition"
     @click="handleLoadMoreComments"
-    v-if="comments.length > 0 && nextPageUrl !== null"
+    v-if="comments.length > 0 && nextPageUrl !== null" // here
 >
     Load More
 </button>
@@ -41,9 +47,9 @@ Here I render the `Load More` button in two conditions:
 
 ## Debounce search functionality
 
-I created the search functionality everytime the users typing. But, I optimized it by utilizing `debounce` function so it won't perform API Call on every single letter typed by the user. I also gave a feedback about the words searched in the UI.
+I created the search functionality everytime the users typing. But, I optimized it by utilizing `debounce` function so it won't perform API Call on every single letter typed by the user.
 
-`debounce.ts`
+`client/utils/debounce.ts`
 
 ```vue
 export function debounce(func: Function, delay: number) {
@@ -57,7 +63,9 @@ export function debounce(func: Function, delay: number) {
 }
 ```
 
-`CommentSearchForm.vue`
+I also gave a feedback about the words searched in the UI.
+
+`client/components/CommentSearchForm.vue`
 
 ```vue
 <template>
@@ -69,7 +77,7 @@ export function debounce(func: Function, delay: number) {
         placeholder="Search..."
         autocomplete="off"
         v-model="state.query"
-        @input="handleSearch"
+        @input="handleSearch" // event
     />
     ...
     <p v-if="state.query" class="text-gray-500">Searching: {{ state.query }}</p> // feedback
@@ -81,22 +89,22 @@ const state = reactive({
     query: "",
 });
 
-const emits = defineEmits(["handleSearch"]);
+const emits = defineEmits(["handleSearch"]); // emits the event
 
 function handleSearch(e: Event) {
     e.preventDefault();
 
-    emits("handleSearch", state.query);
+    emits("handleSearch", state.query); // emits the event
 }
 </script>
 ```
 
-`index.vue`
+`client/pages/index.vue`
 
 ```vue
 <template>
     ...
-    <CommentSearchForm @handle-search="debouncedHandleSearch" />
+    <CommentSearchForm @handle-search="debouncedHandleSearch" /> // pass the search function
     ...
 </template>
 
@@ -105,13 +113,15 @@ async function handleSearch(query) {
    ...
 }
 
-const debouncedHandleSearch = debounce(handleSearch, 500);
+const debouncedHandleSearch = debounce(handleSearch, 500); // debounce the search function
 </script>
 ```
 
 ## Highlight query searched
 
 Here, I created state to store `words` (the query) searched.
+
+`client/pages/index.vue`
 
 ```vue
 const state = reactive({
@@ -120,6 +130,8 @@ const state = reactive({
 ```
 
 And, everytime users perform search functionality, the query typed will be assigned to the state.
+
+`client/pages/index.vue`
 
 ```vue
 async function handleSearch(query) {
@@ -132,7 +144,7 @@ async function handleSearch(query) {
 
 The assigned state will be passed to the `CommentItem` component. Here I render the username and comment data inside the `WordHighlighter` component (from an open source project [`vue-word-highlighter`](https://github.com/kawamataryo/vue-word-highlighter)).
 
-`index.vue`
+`client/pages/index.vue`
 
 ```vue
 <CommentItem
@@ -140,22 +152,22 @@ The assigned state will be passed to the `CommentItem` component. Here I render 
     :key="comment.username"
     :username="comment.username"
     :comment="comment.comment"
-    :words="state.words"
+    :words="state.words" // pass the words (the query)
 />
 ```
 
-`CommentItem.vue`
+`client/components/CommentItem.vue`
 
 ```vue
 <template>
     <div class="border rounded-lg p-4">
         <h1 class="text-xl font-semibold">
-            <WordHighlighter :query="props.words" :splitBySpace="true">
+            <WordHighlighter :query="props.words" :splitBySpace="true"> // highlighter
                 {{ props.username }}
             </WordHighlighter>
         </h1>
         <p>
-            <WordHighlighter :query="props.words" :splitBySpace="true">
+            <WordHighlighter :query="props.words" :splitBySpace="true"> // highlighter
                 {{ props.comment }}
             </WordHighlighter>
         </p>
