@@ -11,12 +11,9 @@ class CommentController extends Controller
     {
         $query = Comment::query();
 
-        if ($request->has('username')) {
-            $query->where('username', 'like', '%' . $request->input('username') . '%');
-        }
-
-        if ($request->has('comment')) {
-            $query->where('comment', 'like', '%' . $request->input('comment') . '%');
+        if ($request->has('query')) {
+            $query->where('username', 'like', '%' . $request->input('query') . '%')
+                ->orWhere('comment', 'like', '%' . $request->input('query') . '%');
         }
 
         $comments = $query->latest()->paginate(10);
