@@ -10,6 +10,7 @@
                     :key="comment.username"
                     :username="comment.username"
                     :comment="comment.comment"
+                    :words="state.words"
                 />
                 <p v-if="comments.length === 0">No data found.</p>
                 <button
@@ -33,6 +34,9 @@ import { debounce } from "~/utils/debounce";
 const config = useRuntimeConfig();
 const API_URL = config.public.API_URL;
 
+const state = reactive({
+    words: ""
+});
 const comments = ref([]);
 const nextPageUrl = ref("");
 const { data } = useFetch(`${API_URL}/api/comments`);
@@ -57,6 +61,8 @@ async function handleLoadMoreComments() {
 
 async function handleSearch(query) {
     try {
+        state.words = query;
+
         const response = await fetch(`${API_URL}/api/comments?query=${query}`);
         const data = await response.json();
 
